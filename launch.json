@@ -1,0 +1,18 @@
+{
+    "apps": [{
+      "name": "wechat", // pm2项目名字
+      "script": "./index.js", // 程序入口
+      "cwd": "./",
+      "instances": 3, // 服务器数量
+      "exec_mode": "cluster", // 启动服务器方式，fork 代表单个启动，cluster代表集群启动，启动多个切公用一个端口
+      "env": {// 环境变量配置
+        // "NODE_ENV": "pre",
+        // "NODE_PORT": 8910,
+        // "PROXY_HOST": "http://127.0.0.1:5010"
+      },
+      "error_file": "./log/customer_query_err.log", // 错误日志输出地址
+      "out_file": "./log/customer_query_out.log", // 总的日志输出地址
+      "merge_logs": true, // 是否把所有的日志合并起来
+      "log_date_format": "YYYY-MM-DD HH:mm Z" // 日志日前格式
+    }]
+  }
