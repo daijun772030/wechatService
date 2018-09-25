@@ -28,7 +28,7 @@ app.use('/wechat', wechat(config, function(req, res, next) {
     if (req.weixin.Event === 'CLICK' && req.weixin.EventKey === 'CUSTOMER_SERVICE') {
         res.reply(`您好！欢迎联系懒猪到家在线技术支持，请选择您需要咨询的内容，并回复对应的数字序号：\n[1] 订单问题 \n[2] 商家问题 \n[3] 投诉建议 \n[4] 商务合作 \n例如：咨询订单问题的相关内容，请回复 1，将由在线客服为您咨询`);
     } else {
-        switch(req.weixiin.Content) {
+        switch(req.weixin.Content) {
             case '1': 
                 res.reply('订单问题');
                 break;
