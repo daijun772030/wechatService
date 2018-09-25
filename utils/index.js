@@ -8,7 +8,7 @@ exports.wechatCheckToken = function(req,res, next){
 	var timestamp = query.timestamp;
 	var nonce = query.nonce;
     var echostr = query.echostr;
-    console.log('echostr==> %s', echostr);
+    // console.log('echostr==> %s', echostr);
     if(!echostr) {
         next();
         return;
@@ -23,10 +23,10 @@ exports.wechatCheckToken = function(req,res, next){
  
 function check(timestamp,nonce,signature,token){
     var currSign,tmp;
-    console.log('token==> %s', token);
+    // console.log('token==> %s', token);
     tmp = [token,timestamp,nonce].sort().join("");
-    console.log('tmp==> %s', tmp);
+    // console.log('tmp==> %s', tmp);
     currSign = crypto.createHash("sha1").update(tmp).digest("hex");
-    console.log('currSign==> %s  signature===> %s', currSign, signature);
+    // console.log('currSign==> %s  signature===> %s', currSign, signature);
 	return (currSign === signature);  
 }}
