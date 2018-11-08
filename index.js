@@ -1,6 +1,9 @@
 var express = require('express');
 var wechat = require('wechat');
-var { wechatCheckToken } = require('./utils');
+var path = require('path');
+var { wechatCheckToken, getAccessToken, uploadMedio, sendMessageBatch } = require('./utils');
+
+
 var app = express();
 var config = {
     token: 'wechat',
@@ -10,9 +13,28 @@ var config = {
 };
 
 var access = {
-    token: '14_ve2GhWUBx6nb2yktpU94xI3uwVvDdwGGOkeY_xIe0pMxETELwcxHyM5iZVHJiM_xSNCSoW6UqHbKRZh7erFrTS3jxETj6QnTimIsZQXffaKYyMxtk2Cn5nMGi3zvs2ybgXTfAEOpafKgsb7aKQZcADABHQ',
-    secret: '7ea2af72f3d88346bc12c17d7bd6f81d'
+    appid: 'wxe81288f5ea1062fa',
+    secret: '7ea2af72f3d88346bc12c17d7bd6f81d',
+    token: ''
 }
+
+var media = {
+    test: ''
+}
+
+// 获取微信token
+getAccessToken(access).then(res => {
+    access.token = res.access_token;
+    console.log('获取微信api的token成功！', res.access_token);
+    
+    // 测试上传素材
+    uploadMedio(path.resolve(__dirname, './images/test.png'), 'image').then((res) => {
+        console.log(res);
+        media.test = res.media_id;
+    }).catch(e => {
+        console.log(e);
+    })
+}).catch(e => console.log(e));
 
 
 // 验证服务器配置方法，成功后不再使用
@@ -42,10 +64,19 @@ app.use('/wechat', wechat(config, function(req, res, next) {
                 res.reply('直接输入关于商务合作的问题，客服尽快为您解答');
                 break;
             case '懒猪锦鲤':
-                res.reply([
-                    { type: "text", content: '点击下方图片，并完成入驻商家信息填写，即可入驻懒猪到家并参与“懒猪锦鲤”抽奖！下载懒猪到家APP，更有双十一商场特惠等着您' }
-                    // { type: "image", content: { mediaId: 'XXQx-iXm4j2t_jp65KjZy0BDouI_oFGj5-uMcd_3edwEOYAfaLD4IyjnyBE1HEhD' } }
-                ])
+                // 批量发送消息
+                sendMessageBatch([
+                    {
+                        type: 'text',
+                        content: '点击下方图片，并完成入驻商家信息填写，即可入驻懒猪到家并参与“懒猪锦鲤”抽奖！下载懒猪到家APP，更有双十一商场特惠等着您',
+                        openId: req.weixin.FromUserName
+                    },
+                    {
+                        type: 'image',
+                        content: media.test,
+                        openId: req.weixin.FromUserName
+                    }
+                ]);
                 break;
             default:
                 res.transfer2CustomerService();
