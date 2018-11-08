@@ -65,7 +65,8 @@ exports.getAccessToken = function(options) {
 // 发送消息的方法映射map
 const mssageMap = {
     text: 'sendText',
-    image: 'sendImage'
+    image: 'sendImage',
+    new: 'sendNews'
 }
 
 // 上传素材

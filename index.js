@@ -64,16 +64,30 @@ app.use('/wechat', wechat(config, function(req, res, next) {
                 res.reply('直接输入关于商务合作的问题，客服尽快为您解答');
                 break;
             case '懒猪锦鲤':
-                // 批量发送消息
+                // 批量发送消息，一条一条的发送，如果只发送一条使用sendMessage
                 sendMessageBatch([
                     {
                         type: 'text',
                         content: '点击下方图片，并完成入驻商家信息填写，即可入驻懒猪到家并参与“懒猪锦鲤”抽奖！下载懒猪到家APP，更有双十一商场特惠等着您',
                         openId: req.weixin.FromUserName
                     },
+                    // 发送图片
                     {
                         type: 'image',
                         content: media.test,
+                        openId: req.weixin.FromUserName
+                    },
+                    // 图文消息，带链接的
+                    {
+                        type: 'new',
+                        content: [
+                            {
+                              "title":"Happy Day",
+                              "description":"Is Really A Happy Day",
+                              "url":"URL",
+                              "picurl":"PIC_URL"
+                            }
+                        ],
                         openId: req.weixin.FromUserName
                     }
                 ]);
