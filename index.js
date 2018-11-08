@@ -50,7 +50,10 @@ var MsgId = {};
 app.use('/wechat', wechat(config, function(req, res, next) {
     console.log('message==> %o', req.weixin);
     // 检查当前这个信息id是已经发送过的，就不再发送了
-    if(MsgId[req.weixin.MsgId] && MsgId[req.weixin.MsgId].isSend) return;
+    if(MsgId[req.weixin.MsgId] && MsgId[req.weixin.MsgId].isSend) {
+        res.end();
+        return;
+    }
     MsgId[req.weixin.MsgId] = { ...req.weixin, isSend: false };
     // 确定点击的自定义菜单是客服服务按钮，然后就自动回复响应的内容，否则就转发到多客服系统
     if (req.weixin.Event === 'CLICK' && req.weixin.EventKey === 'CUSTOMER_SERVICE') {
