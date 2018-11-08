@@ -28,20 +28,27 @@ app.use('/wechat', wechat(config, function(req, res, next) {
     if (req.weixin.Event === 'CLICK' && req.weixin.EventKey === 'CUSTOMER_SERVICE') {
         res.reply(`您好！欢迎联系懒猪到家在线技术支持，请选择您需要咨询的内容，并回复对应的数字序号：\n[1] 订单问题 \n[2] 商家问题 \n[3] 投诉建议 \n[4] 商务合作 \n例如：咨询订单问题的相关内容，请回复 1，将由在线客服为您咨询`);
     } else {
-        switch(req.weixin.Content) {
-            case '1': 
-                res.reply('订单问题');
+        switch (req.weixin.Content) {
+            case '1':
+                res.reply('直接输入订单问题，客服尽快为您解答');
                 break;
-            case '2': 
-                res.reply('商家问题');
+            case '2':
+                res.reply('直接输入商家问题，客服尽快为您解答');
                 break;
-            case '3': 
-                res.reply('投诉建议');
+            case '3':
+                res.reply('直接输入对公司的建议，客服尽快为您处理');
                 break;
-            case '4': 
-                res.reply('商务合作');
+            case '4':
+                res.reply('直接输入关于商务合作的问题，客服尽快为您解答');
                 break;
-            default: res.transfer2CustomerService();
+            case '懒猪锦鲤':
+                res.reply([
+                    { type: "text", content: '点击下方图片，并完成入驻商家信息填写，即可入驻懒猪到家并参与“懒猪锦鲤”抽奖！下载懒猪到家APP，更有双十一商场特惠等着您' }
+                    // { type: "image", content: { mediaId: 'XXQx-iXm4j2t_jp65KjZy0BDouI_oFGj5-uMcd_3edwEOYAfaLD4IyjnyBE1HEhD' } }
+                ])
+                break;
+            default:
+                res.transfer2CustomerService();
         }
     }
 }));
