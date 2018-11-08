@@ -96,6 +96,9 @@ var sendMessage = function({type, content, openId}) {
 }
 
 
+exports.sendMessage = sendMessage;
+
+// 批量发送,list为promise
 exports.sendMessageBatch = function(list) {
     const promisList = list.map(item => sendMessage(item));
     return Promise.all(promisList);
