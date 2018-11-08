@@ -3,7 +3,7 @@
       "name": "wechat", // pm2项目名字
       "script": "./index.js", // 程序入口
       "cwd": "./",
-      "instances": 3, // 服务器数量
+      "instances": 1, // 服务器数量
       "exec_mode": "cluster", // 启动服务器方式，fork 代表单个启动，cluster代表集群启动，启动多个切公用一个端口
       "env": {// 环境变量配置
         // "NODE_ENV": "pre",
