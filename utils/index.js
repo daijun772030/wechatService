@@ -16,7 +16,7 @@ function check(timestamp,nonce,signature,token){
 
 exports.wechatCheckToken = function(req,res, next){
     var query = url.parse(req.url,true).query;
-    console.log('query==> %o', query);
+    // console.log('query==> %o', query);
 	var signature = query.signature;
 	var timestamp = query.timestamp;
 	var nonce = query.nonce;
@@ -44,9 +44,9 @@ exports.getAccessToken = function(options) {
             });
             res.on('end',function(){
                 result = Buffer.concat(buffer,buffer.length).toString('utf-8');
-                console.log('======>', buffer);
-                console.log('======>', Buffer.concat(buffer,buffer.length));
-                console.log('=======>', result);
+                // console.log('======>', buffer);
+                // console.log('======>', Buffer.concat(buffer,buffer.length));
+                // console.log('=======>', result);
                 resolve(result);
             });
         });

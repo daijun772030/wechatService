@@ -19,7 +19,8 @@ var access = {
 }
 
 var media = {
-    test: ''
+    prod1: '',
+    prod2: ''
 }
 
 // 获取微信token
@@ -28,12 +29,19 @@ getAccessToken(access).then(res => {
     console.log('获取微信api的token成功！', res.access_token);
     
     // 测试上传素材
-    uploadMedio(path.resolve(__dirname, './images/test.png'), 'image').then((res) => {
+    uploadMedio(path.resolve(__dirname, './images/prod1.png'), 'image').then((res) => {
         console.log(res);
-        media.test = res.media_id;
+        media.prod1 = res.media_id;
+        uploadMedio(path.resolve(__dirname, './images/prod2.png'), 'image').then((res) => {
+            console.log(res);
+            media.prod2 = res.media_id;
+        }).catch(e => {
+            console.log(e);
+        });
     }).catch(e => {
         console.log(e);
-    })
+    });
+    
 }).catch(e => console.log(e));
 
 
@@ -44,17 +52,17 @@ app.use(wechatCheckToken);
 app.use(express.query());
 
 // 创建一个MsgId的对象，用户排出同一个消息多次发送的问题，因为微信app会在发送消息后重复发送防止丢包
-var MsgId = {};
+var MsgIds = {};
 
 // 在服务器验证完成后该公众号就进入了开发模式，在开发模式下所有的消息都会被转发到这个服务器上。所以需要在服务器上将消息转发到多客服系统
 app.use('/wechat', wechat(config, function(req, res, next) {
     console.log('message==> %o', req.weixin);
     // 检查当前这个信息id是已经发送过的，就不再发送了
-    if(MsgId[req.weixin.MsgId] && MsgId[req.weixin.MsgId].isSend) {
+    if(MsgIds[req.weixin.MsgId] && MsgIds[req.weixin.MsgId].isSend) {
         res.end();
         return;
     }
-    MsgId[req.weixin.MsgId] = { ...req.weixin, isSend: false };
+    MsgIds[req.weixin.MsgId] = { ...req.weixin, isSend: false };
     // 确定点击的自定义菜单是客服服务按钮，然后就自动回复响应的内容，否则就转发到多客服系统
     if (req.weixin.Event === 'CLICK' && req.weixin.EventKey === 'CUSTOMER_SERVICE') {
         res.reply(`您好！欢迎联系懒猪到家在线技术支持，请选择您需要咨询的内容，并回复对应的数字序号：\n[1] 订单问题 \n[2] 商家问题 \n[3] 投诉建议 \n[4] 商务合作 \n例如：咨询订单问题的相关内容，请回复 1，将由在线客服为您咨询`);
@@ -74,39 +82,46 @@ app.use('/wechat', wechat(config, function(req, res, next) {
                 break;
             case '懒猪锦鲤':
                 // 批量发送消息，一条一条的发送，如果只发送一条使用sendMessage
+                console.log('发送', media.prod1, media.prod2)
                 sendMessageBatch([
                     {
                         type: 'text',
-                        content: '点击下方图片，并完成入驻商家信息填写，即可入驻懒猪到家并参与“懒猪锦鲤”抽奖！下载懒猪到家APP，更有双十一商场特惠等着您',
+                        content: "懒猪锦鲤：幸运儿，完成下面两步，即可拥有我哦！\n1、转发下方“懒猪锦鲤”图到朋友圈；\n2、点击后方链接，完成商家入驻信息填写；<a href=\"http://www.pigcome.com:8085/Winning\">点此前往</a>",
                         openId: req.weixin.FromUserName
                     },
                     // 发送图片
                     {
                         type: 'image',
-                        content: media.test,
+                        content: media.prod1,
                         openId: req.weixin.FromUserName
                     },
-                    // 图文消息，带链接的
                     {
-                        type: 'new',
-                        content: [
-                            {
-                              "title":"Happy Day",
-                              "description":"Is Really A Happy Day",
-                              "url":"URL",
-                              "picurl":"PIC_URL"
-                            }
-                        ],
+                        type: 'image',
+                        content: media.prod2,
                         openId: req.weixin.FromUserName
                     }
+                    // 图文消息，带链接的
+                    // {
+                    //     type: 'new',
+                    //     content: [
+                    //         {
+                    //           "title":"Happy Day",
+                    //           "description":"Is Really A Happy Day",
+                    //           "url":"URL",
+                    //           "picurl":"PIC_URL"
+                    //         }
+                    //     ],
+                    //     openId: req.weixin.FromUserName
+                    // }
                 ]).then(res => {
-                    MsgId[req.weixin.MsgId].isSend = true;
+                    MsgIds[req.weixin.MsgId].isSend = true;
+                    res.end();
                 });
                 break;
             default:
                 res.transfer2CustomerService();
 
-            MsgId[req.weixin.MsgId].isSend = true;
+            MsgIds[req.weixin.MsgId].isSend = true;
         }
     }
 }));
