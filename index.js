@@ -43,9 +43,15 @@ app.use(wechatCheckToken);
 // 参数处理
 app.use(express.query());
 
+// 创建一个MsgId的对象，用户排出同一个消息多次发送的问题，因为微信app会在发送消息后重复发送防止丢包
+var MsgId = {};
+
 // 在服务器验证完成后该公众号就进入了开发模式，在开发模式下所有的消息都会被转发到这个服务器上。所以需要在服务器上将消息转发到多客服系统
 app.use('/wechat', wechat(config, function(req, res, next) {
     console.log('message==> %o', req.weixin);
+    // 检查当前这个信息id是已经发送过的，就不再发送了
+    if(MsgId[req.weixin.MsgId] && MsgId[req.weixin.MsgId].isSend) return;
+    MsgId[req.weixin.MsgId] = { ...req.weixin, isSend: false };
     // 确定点击的自定义菜单是客服服务按钮，然后就自动回复响应的内容，否则就转发到多客服系统
     if (req.weixin.Event === 'CLICK' && req.weixin.EventKey === 'CUSTOMER_SERVICE') {
         res.reply(`您好！欢迎联系懒猪到家在线技术支持，请选择您需要咨询的内容，并回复对应的数字序号：\n[1] 订单问题 \n[2] 商家问题 \n[3] 投诉建议 \n[4] 商务合作 \n例如：咨询订单问题的相关内容，请回复 1，将由在线客服为您咨询`);
@@ -90,10 +96,14 @@ app.use('/wechat', wechat(config, function(req, res, next) {
                         ],
                         openId: req.weixin.FromUserName
                     }
-                ]);
+                ]).then(res => {
+                    MsgId[req.weixin.MsgId].isSend = true;
+                });
                 break;
             default:
                 res.transfer2CustomerService();
+
+            MsgId[req.weixin.MsgId].isSend = true;
         }
     }
 }));
