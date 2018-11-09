@@ -50,7 +50,8 @@ app.use('/wechat/download', function(req, res, next) {
     var ua =req.headers['user-agent'],  
     $ = {};  
   console.log(req.headers);
-  console.log(/iPhone/.test(ua));
+  console.log('is iPhone', /iPhone/.test(ua));
+  console.log('is Android', /iPhone/.test(ua));
 // 不是移动端直接跳转到android下载页面
 if (!/mobile/i.test(ua)) res.redirect(301, 'https://www.wandoujia.com/apps/com.example.sjkj');
 if(/iPhone/.test(ua)) res.redirect(301, 'https://itunes.apple.com/cn/app/%E6%87%92%E7%8C%AA%E5%88%B0%E5%AE%B6/id1435420262?mt=8');
