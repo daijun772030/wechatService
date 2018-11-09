@@ -73,7 +73,7 @@ app.use('/wechat', wechat(config, function(req, res, next) {
     console.log('message==> %o', req.weixin);
     // 检查当前这个信息id是已经发送过的，就不再发送了
     if(MsgIds[req.weixin.MsgId] && MsgIds[req.weixin.MsgId].isSend) {
-        res.send();
+        res.reply();
         return;
     }
     MsgIds[req.weixin.MsgId] = { ...req.weixin, isSend: false };
@@ -129,7 +129,7 @@ app.use('/wechat', wechat(config, function(req, res, next) {
                     // }
                 ]).then(res => {
                     MsgIds[req.weixin.MsgId].isSend = true;
-                    res.send();
+                    res.reply();
                 });
                 break;
             default:
