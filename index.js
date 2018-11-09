@@ -45,6 +45,20 @@ getAccessToken(access).then(res => {
 }).catch(e => console.log(e));
 
 
+// 重定向到Android和ios下载地址
+app.use('/wechat/download', function(req, res, next) {
+    var ua =req.headers['user-agent'],  
+    $ = {};  
+  console.log(req.headers);
+  console.log(/iPhone/.test(ua));
+if (/mobile/i.test(ua))  
+    $.Mobile = true;  
+if(/iPhone/.test(ua)) res.redirect(301, 'https://itunes.apple.com/cn/app/%E6%87%92%E7%8C%AA%E5%88%B0%E5%AE%B6/id1435420262?mt=8');
+  
+if (/Android/.test(ua)) res.redirect(301, 'https://www.wandoujia.com/apps/com.example.sjkj');
+});
+
+
 // 验证服务器配置方法，成功后不再使用
 app.use(wechatCheckToken);
 
